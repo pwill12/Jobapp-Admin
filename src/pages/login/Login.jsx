@@ -101,7 +101,7 @@ export default function Login() {
     <Con>
       <Container>
         <CenterLogo>
-          Verify Email and Password
+          Welcome Back....Admin
           <i class="fas fa-laptop-code" style={{ color: "black" }}></i>
         </CenterLogo>
         <Wrapper>
