@@ -1,34 +1,47 @@
+// eslint-disable-next-line
 import "./datatable.scss";
 import { useSelector } from "react-redux";
 import { DataGrid } from "@mui/x-data-grid";
+import { format } from "timeago.js";
 // import { userColumns } from "../../datatablesource";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { publicRequest, userRequest } from "../../apirequests";
+import { publicRequest } from "../../apirequests";
+import { useDispatch } from "react-redux";
 import AccountCircleOutlined from "@mui/icons-material/AccountCircleOutlined";
+import {
+  failureloading,
+  loadingfetchings,
+  successfullyloaded,
+} from "../../redux/Loading";
+import Animations from "../Backloading/Skeletonloading";
 
-const Datatable = () => {
+const Jobsdata = () => {
   const datas = useSelector((state) => state.recruiter.currentUser);
-  const {successapi,fetchingapi,failureapi} = useSelector((state) => state.loadingdata);
-
+  const { successapi, fetchingapi, failureapi } = useSelector(
+    (state) => state.loadingdata
+  );
   let ids = datas._id;
-  console.log(successapi)
+  const dispatch = useDispatch();
 
   const [jobs, setjobs] = useState([]);
   useEffect(() => {
     const getjobsinfo = async () => {
+      dispatch(loadingfetchings());
       try {
         const res = await publicRequest.get(
-          `https://willdevjobs.herokuapp.com/api/candidateapplied?ids=${ids}`
+          `https://willdevjobs.herokuapp.com/api/jobsemployee?jobs=${ids}`
         );
         setjobs(res.data);
+        dispatch(successfullyloaded());
       } catch (err) {
         console.log(err);
+        dispatch(failureloading());
       }
     };
     getjobsinfo();
   }, []);
-  console.log(jobs);
+  // console.log(jobs);
 
   const userColumns = [
     {
@@ -38,70 +51,67 @@ const Datatable = () => {
       type: "string",
     },
     {
-      field: "jobdetails",
-      headerName: "Job",
-      width: 200,
-      // renderCell: (params) => {
-      //   return (
-      //     <div className="cellWithImg">
-      //       {params.img === undefined ? (
-      //         <>
-      //           <AccountCircleOutlined
-      //             sx={{
-      //               fontSize: "37px",
-      //               color: "lightgrey",
-      //               marginRight: "5px",
-      //             }}
-      //           />
-      //           {params.user}
-      //         </>
-      //       ) : (
-      //         <>
-      //           <img className="cellImg" src={params.user} alt="avatar" />
-      //           {params.username}
-      //         </>
-      //       )}
-      //     </div>
-      //   );
-      // },
+      field: "img",
+      headerName: "Jobs Posted",
+      width: 100,
+      renderCell: (params) => {
+        return (
+          <div className="cellWithImg">
+            {params.img === null ? (
+              <>
+                <AccountCircleOutlined
+                  sx={{
+                    fontSize: "37px",
+                    color: "lightgrey",
+                    marginRight: "5px",
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <img className="cellImg" src={params.row.img} alt="avatar" />
+                {/* {params.username} */}
+              </>
+            )}
+          </div>
+        );
+      },
     },
     {
-      field: "length",
-      headerName: "Total number of Applicants",
-      width: 230,
-      renderCell: (params) => {
-        return <div className="rowitem">{params.row.jobitems.length} users</div>;
-      },
-      // valueFormatter: (params) => params.row?.jobitems.length,
+      field: "title",
+      headerName: "Job Title",
+      width: 200,
+      type: "string",
     },
 
-    // {
-    //   field: "jobitems",
-    //   headerName: "Applicants",
-    //   width: 230,
-    //   // valueFormatter: (params) => params.value.jobitems,
-    //   type: "string",
-    //   renderCell: (params) => (
-    //     <ul className="flex">
-    //       {params.value.map((item, index) => (
-    //         <li key={index}>{item.username}</li>
-    //       ))}
-    //     </ul>
-    //   ),
-    // },
+    {
+      field: "tag",
+      headerName: "Tag",
+      width: 150,
+      type: "string",
+    },
     {
       // field: "cover",
       headerName: "Achieve Job",
-      width: 200,
+      width: 120,
       renderCell: (params) => {
         // console.log({ params })
         return (
           <div className="cellAction">
             {/* <Link to={"/users/"} style={{ textDecoration: "none" }}> */}
-              <div className="deleteButton">Achieve</div>
+            <div className="deleteButton">Delete</div>
             {/* </Link> */}
           </div>
         );
+      },
+    },
+    {
+      field: "job",
+      headerName: "Time Posted",
+      width: 130,
+      type: "string",
+      renderCell: (params) => {
+        return <div>{format(params.row?.createdAt)}</div>;
       },
     },
   ];
@@ -115,7 +125,7 @@ const Datatable = () => {
     {
       field: "action",
       headerName: "Action",
-      width: 300,
+      width: 120,
       renderCell: (params) => {
         return (
           <div className="cellAction">
@@ -141,7 +151,10 @@ const Datatable = () => {
       renderCell: (params) => {
         return (
           <div className="cellAction">
-            <Link to={"/users/"+params.row.jobId} style={{ textDecoration: "none" }}>
+            <Link
+              to={"/users/" + params.row.jobId}
+              style={{ textDecoration: "none" }}
+            >
               <div className="viewButton">View Applicants</div>
             </Link>
             {/* <div
@@ -158,22 +171,35 @@ const Datatable = () => {
   return (
     <div className="datatable">
       <div className="datatableTitle">
-        Applied Users
+        Job Details
         {/* <Link to="/users/new" className="link">
           Add New
         </Link> */}
       </div>
-      <DataGrid
+      {fetchingapi ? (
+        <Animations />
+      ) : (
+        <DataGrid
+          getRowId={(jobss) => jobss._id}
+          className="datagrid"
+          rows={jobs.map((item) => item)}
+          columns={userColumns.concat(actionColumn2)}
+          pageSize={6}
+          rowsPerPageOptions={[9]}
+          checkboxSelection
+        />
+      )}
+      {/* <DataGrid
         getRowId={(jobss) => jobss._id}
         className="datagrid"
         rows={jobs.map((item)=> item)}
         columns={userColumns.concat(actionColumn2)}
-        pageSize={9}
+        pageSize={6}
         rowsPerPageOptions={[9]}
         checkboxSelection
-      />
+      /> */}
     </div>
   );
 };
 
-export default Datatable;
+export default Jobsdata;

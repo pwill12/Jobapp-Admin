@@ -11,6 +11,7 @@ import Datatable from "../../components/datatable/Datatable";
 import { CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useReducer, useState } from "react";
+import Jobsdata from "../../components/jobs/Jobs";
 
 const Home = () => {
   const updatesuccess = useSelector((state) => state.updatestoken.updates);
@@ -28,6 +29,13 @@ const Home = () => {
             <Widget type="order" />
             <Widget type="earning" />
             <Widget type="balance" />
+          </div>
+          <div className="listContainer">
+          <div className="listTitle">Posted Jobs</div>
+          <Jobsdata/>
+
+            {/* <div className="listTitle">Applicant List</div>
+            <Datatable /> */}
           </div>
           <div className="listContainer">
             <div className="listTitle">Applicant List</div>

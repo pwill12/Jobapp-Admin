@@ -4,9 +4,29 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
 import WorkIcon from '@mui/icons-material/Work';
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { publicRequest } from "../../apirequests";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const Widget = ({ type }) => {
+  const datas = useSelector((state) => state.recruiter.currentUser);
+  let ids = datas._id;
+
+  const [jobs, setjobs] = useState([]);
+  useEffect(() => {
+    const getjobsinfo = async () => {
+      try {
+        const res = await publicRequest.get(
+          `https://willdevjobs.herokuapp.com/api/jobsemployee?jobs=${ids}`
+        );
+        setjobs(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getjobsinfo();
+  }, []);
   let data;
 
   //temporary
@@ -19,7 +39,7 @@ const Widget = ({ type }) => {
         title: "TOTAL APPLICANTS",
         isMoney: false,
         link: "See all users",
-        amount: 300,
+        amount: 10,
         icon: (
           <PersonOutlinedIcon
             className="icon"
@@ -35,8 +55,8 @@ const Widget = ({ type }) => {
       data = {
         title: "POSTED JOBS",
         isMoney: false,
-        amount: 200,
-        link: "View all orders",
+        amount: jobs.length,
+        link: "View all jobs",
         icon: (
           <WorkIcon
             className="icon"
