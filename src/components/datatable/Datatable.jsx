@@ -9,10 +9,12 @@ import AccountCircleOutlined from "@mui/icons-material/AccountCircleOutlined";
 
 const Datatable = () => {
   const datas = useSelector((state) => state.recruiter.currentUser);
-  const {successapi,fetchingapi,failureapi} = useSelector((state) => state.loadingdata);
+  const { successapi, fetchingapi, failureapi } = useSelector(
+    (state) => state.loadingdata
+  );
 
   let ids = datas._id;
-  console.log(successapi)
+  console.log(successapi);
 
   const [jobs, setjobs] = useState([]);
   useEffect(() => {
@@ -41,54 +43,27 @@ const Datatable = () => {
       field: "jobdetails",
       headerName: "Job",
       width: 200,
-      // renderCell: (params) => {
-      //   return (
-      //     <div className="cellWithImg">
-      //       {params.img === undefined ? (
-      //         <>
-      //           <AccountCircleOutlined
-      //             sx={{
-      //               fontSize: "37px",
-      //               color: "lightgrey",
-      //               marginRight: "5px",
-      //             }}
-      //           />
-      //           {params.user}
-      //         </>
-      //       ) : (
-      //         <>
-      //           <img className="cellImg" src={params.user} alt="avatar" />
-      //           {params.username}
-      //         </>
-      //       )}
-      //     </div>
-      //   );
-      // },
+      renderCell: (params) => {
+        return (
+          <div className="cellWithImg">
+            <img className="cellImg" src={params.user} alt="avatar" />
+            {params.username}
+          </div>
+        );
+      },
     },
     {
       field: "length",
       headerName: "Total number of Applicants",
       width: 230,
       renderCell: (params) => {
-        return <div className="rowitem">{params.row.jobitems.length} users</div>;
+        return (
+          <div className="rowitem">{params.row.jobitems.length} users</div>
+        );
       },
       // valueFormatter: (params) => params.row?.jobitems.length,
     },
 
-    // {
-    //   field: "jobitems",
-    //   headerName: "Applicants",
-    //   width: 230,
-    //   // valueFormatter: (params) => params.value.jobitems,
-    //   type: "string",
-    //   renderCell: (params) => (
-    //     <ul className="flex">
-    //       {params.value.map((item, index) => (
-    //         <li key={index}>{item.username}</li>
-    //       ))}
-    //     </ul>
-    //   ),
-    // },
     {
       // field: "cover",
       headerName: "Achieve Job",
@@ -98,7 +73,7 @@ const Datatable = () => {
         return (
           <div className="cellAction">
             {/* <Link to={"/users/"} style={{ textDecoration: "none" }}> */}
-              <div className="deleteButton">Achieve</div>
+            <div className="deleteButton">Achieve</div>
             {/* </Link> */}
           </div>
         );
@@ -141,7 +116,10 @@ const Datatable = () => {
       renderCell: (params) => {
         return (
           <div className="cellAction">
-            <Link to={"/users/"+params.row.jobId} style={{ textDecoration: "none" }}>
+            <Link
+              to={"/users/" + params.row.jobId}
+              style={{ textDecoration: "none" }}
+            >
               <div className="viewButton">View Applicants</div>
             </Link>
             {/* <div
@@ -166,7 +144,7 @@ const Datatable = () => {
       <DataGrid
         getRowId={(jobss) => jobss._id}
         className="datagrid"
-        rows={jobs.map((item)=> item)}
+        rows={jobs.map((item) => item)}
         columns={userColumns.concat(actionColumn2)}
         pageSize={9}
         rowsPerPageOptions={[9]}

@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
 import { Grid, TextField } from "@mui/material";
 import { mylogin } from "../../redux/AdminApiCalls";
+import { Mobile } from "../../Mobile";
 
 const Con = styled.div`
   height: 100%;
@@ -23,6 +24,9 @@ const Container = styled.div`
   flex-direction: column;
   position: relative;
   justify-content: center;
+  ${Mobile({
+    display: 'none'
+  })}
   ${
     "" /* ${Mobile({ background: '-webkit-linear-gradient(-45deg, #83c3e3 50%, #ec94ec 50%)' })} */
   }
@@ -84,6 +88,14 @@ const Error = styled.span`
   color: red;
 `;
 
+const Mobilecon = styled.div`
+  display: none;
+  text-align: center;
+  ${Mobile({
+    display: 'block'
+  })}
+`
+
 export default function Login() {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
@@ -99,6 +111,7 @@ export default function Login() {
 
   return (
     <Con>
+      <Mobilecon>Pls switch to desktop for a better experience</Mobilecon>
       <Container>
         <CenterLogo>
           Welcome Back....Admin
